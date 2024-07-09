@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Recomendações de Filmes{% endblock %}
+
+{% block content %}
+<h1 class="title is-4">Recomendações de Filmes</h1>
+
+{% macro render_carousel(titulo, filmes) %}
+    <div>
+        <h2 class="subtitle is-5">{{ titulo }}</h2>
+        <div class="carousel">
+            <div class="carousel-container">
+                {% for filme in filmes %}
+                    <div class="carousel-item">
+                        <div class="card">
+                            <div class="card-image">
+                                <figure class="image is-4by5">
+                                    <img src="{{ filme.poster_url }}" alt="{{ filme.titulo }}">
+                                </figure>
+                            </div>
+                            <div class="card-content">
+                                <p class="title is-6">{{ filme.titulo }} ({{ filme.ano }})</p>
+                                <p class="subtitle is-7">{{ filme.genero }}</p>
+                                <p><strong>Diretor:</strong> {{ filme.diretor }}</p>
+                                <p><strong>Elenco:</strong>
+                                    {% for ator in filme.elenco %}
+                                        <a href="{{ url_for('detalhes_ator', nome=ator) }}">{{ ator }}</a>{% if not loop.last %}, {% endif %}
+                                    {% endfor %}
+                                </p>
+                                <p><strong>Avaliação Média:</strong> {{ filme.avaliacoes | length > 0 and (filme.avaliacoes | sum / filme.avaliacoes | length) or 'N/A' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{{ render_carousel('Filmes baseados nos seus atores favoritos', recomendacoes_por_atores) }}
+{{ render_carousel('Filmes baseados nos seus diretores favoritos', recomendacoes_por_diretores) }}
+{{ render_carousel('Filmes baseados nos seus gêneros favoritos', recomendacoes_por_generos) }}
+{{ render_carousel('Filmes baseados no período e avaliação', recomendacoes_por_ano_e_avaliacao) }}
+{{ render_carousel('Filmes baseados no diretor e gênero', recomendacoes_por_diretor_e_genero) }}
+{{ render_carousel('Filmes baseados nos atores, diretores e avaliação média', recomendacoes_por_ator_diretor_avaliacao) }}
+
+<style>
+
+</style>
+
+{% endblock %}

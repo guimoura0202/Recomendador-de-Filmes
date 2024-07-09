@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}Preferências de Filmes{% endblock %}
+
+{% block content %}
+<h1 class="title is-4">Preferências de Filmes</h1>
+
+<form id="preferences-form" action="{{ url_for('salvar_preferencias') }}" method="post" class="mb-4">
+    <div class="columns is-multiline">
+        <div class="column is-one-third">
+            <label for="actors">Atores Favoritos:</label>
+            <input type="text" class="input tag-input" id="actors" autocomplete="off">
+            <div class="tags" id="atores-tags">
+                {% for ator in preferencias.atores %}
+                    <span class="tag is-info">{{ ator }}<button class="delete" onclick="removeTag(this)"></button></span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="column is-one-third">
+            <label for="directors">Diretores Favoritos:</label>
+            <input type="text" class="input tag-input" id="directors" autocomplete="off">
+            <div class="tags" id="diretores-tags">
+                {% for diretor in preferencias.diretores %}
+                    <span class="tag is-info">{{ diretor }}<button class="delete" onclick="removeTag(this)"></button></span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="column is-one-third">
+            <label for="genres">Gêneros Favoritos:</label>
+            <input type="text" class="input tag-input" id="genres" autocomplete="off">
+            <div class="tags" id="generos-tags">
+                {% for genero in preferencias.generos %}
+                    <span class="tag is-info">{{ genero }}<button class="delete" onclick="removeTag(this)"></button></span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="column is-one-third">
+            <label for="min-year">Ano Mínimo:</label>
+            <input type="number" class="input" id="min-year" name="ano_minimo" value="{{ preferencias.ano_minimo }}">
+        </div>
+
+        <div class="column is-one-third">
+            <label for="max-year">Ano Máximo:</label>
+            <input type="number" class="input" id="max-year" name="ano_maximo" value="{{ preferencias.ano_maximo }}">
+        </div>
+
+        <div class="column is-one-third">
+            <label for="min-rating">Nota Mínima:</label>
+            <input type="number" class="input" id="min-rating" name="nota_minima" value="{{ preferencias.nota_minima }}">
+        </div>
+    </div>
+    <button type="submit" class="button is-primary">Salvar Preferências</button>
+</form>
+
+<script>
+document.querySelectorAll('.tag-input').forEach(function(input) {
+    input.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const tagText = input.value.trim();
+            if (tagText !== '' && !isTagDuplicate(tagText, input.nextElementSibling)) {
+                const tag = document.createElement('span');
+                tag.className = 'tag is-info';
+                tag.textContent = tagText;
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete';
+                deleteBtn.addEventListener('click', function() {
+                    tag.remove();
+                });
+                tag.appendChild(deleteBtn);
+                input.nextElementSibling.appendChild(tag);
+                input.value = '';
+            }
+        }
+    });
+});
+
+function isTagDuplicate(tagText, tagContainer) {
+    var tags = tagContainer.querySelectorAll('.tag');
+    for (var i = 0; i < tags.length; i++) {
+        if (tags[i].childNodes[0].nodeValue.trim() === tagText) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function removeTag(button) {
+    button.parentElement.remove();
+}
+
+document.getElementById('preferences-form').addEventListener('submit', function(event) {
+    const hiddenInputs = this.querySelectorAll('input[type="hidden"]');
+    hiddenInputs.forEach(input => input.remove());
+
+    addHiddenInputs('atores', 'atores-tags');
+    addHiddenInputs('diretores', 'diretores-tags');
+    addHiddenInputs('generos', 'generos-tags');
+});
+
+function addHiddenInputs(inputName, tagsContainerId) {
+    const tags = document.querySelectorAll(`#${tagsContainerId} .tag`);
+    tags.forEach(tag => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = inputName;
+        input.value = tag.childNodes[0].nodeValue.trim();
+        document.getElementById('preferences-form').appendChild(input);
+    });
+}
+</script>
+{% endblock %}

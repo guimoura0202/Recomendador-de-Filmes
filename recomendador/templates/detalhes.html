@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="columns">
+    <div class="column is-one-third">
+        <figure class="image is-3by4">
+            <img src="{{ filme.poster_url }}" alt="{{ filme.titulo }}">
+        </figure>
+    </div>
+    <div class="column">
+        <h2 class="title">{{ filme.titulo }} ({{ filme.ano }})</h2>
+        <p><strong>Gênero:</strong> {{ filme.genero }}</p>
+        <p><strong>Diretor:</strong> {{ filme.diretor }}</p>
+        <p><strong>Elenco:</strong> {{ filme.elenco | join(', ') }}</p>
+        <p><strong>Avaliação Média:</strong> {{ filme.avaliacoes | length > 0 and (filme.avaliacoes | sum / filme.avaliacoes | length) or 'N/A' }}</p>
+        <p><strong>Sinopse:</strong> {{ filme.sinopse }}</p>
+        <a href="{{ url_for('index') }}" class="button is-link">Voltar</a>
+    </div>
+</div>
+{% endblock %}

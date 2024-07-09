@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <div class="card-image">
+            <figure class="image is-4by3">
+                <img src="{{ tmdb_image_base_url }}{{ ator.profile_path }}" alt="{{ ator.name }}">
+            </figure>
+        </div>
+        <div class="card-content">
+            <div class="media">
+                <div class="media-content">
+                    <p class="title is-4">{{ ator.name }}</p>
+                </div>
+            </div>
+            <div class="content">
+                <h2 class="title is-5">Filmes:</h2>
+                <div class="columns is-multiline">
+                    {% for filme in filmes %}
+                    <div class="column is-one-fifth">
+                        <div class="card">
+                            <div class="card-image">
+                                <figure class="image is-4by3">
+                                    <img src="{{ tmdb_image_base_url }}{{ filme.poster_path }}" alt="{{ filme.title }}">
+                                </figure>
+                            </div>
+                            <div class="card-content">
+                                <div class="media">
+                                    <div class="media-content">
+                                        <p class="title is-4">{{ filme.title }}</p>
+                                        <p class="subtitle is-6">{{ filme.release_date }}</p>
+                                        <a href="{{ url_for('detalhes_filme', titulo=filme.title) }}" class="button is-primary">Leia mais...</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

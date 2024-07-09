@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+{% block content %}
+<button id="filtros-btn" class="button is-primary">Filtros</button>
+<a href="{{ url_for('alterar_preferencias') }}" class="button is-primary mt-3">Alterar Preferências</a>
+<a href="{{ url_for('recomendacoes') }}" class="button is-primary mt-3">Recomendações para você</a>
+
+<div id="filtros-container" class="is-hidden">
+    <form id="filtros-form" action="{{ url_for('recomenda_filmes') }}" method="get" class="mb-4">
+        <div class="columns is-multiline">
+            <div class="column is-one-third">
+                <label for="ator">Ator Preferido:</label>
+                <input type="text" class="input tag-input" id="ator" name="ator" autocomplete="off">
+                <div class="tags" id="ator-tags">
+                    {% for ator in ator_preferido %}
+                        <span class="tag is-info">{{ ator }}<button class="delete" onclick="removeTag(this)"></button></span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="column is-one-third">
+                <label for="diretor">Diretor Preferido:</label>
+                <input type="text" class="input tag-input" id="diretor" name="diretor" autocomplete="off">
+                <div class="tags" id="diretor-tags">
+                    {% for diretor in diretor_preferido %}
+                        <span class="tag is-info">{{ diretor }}<button class="delete" onclick="removeTag(this)"></button></span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="column is-one-third">
+                <label for="genero">Gênero Preferido:</label>
+                <input type="text" class="input tag-input" id="genero" name="genero" autocomplete="off">
+                <div class="tags" id="genero-tags">
+                    {% for genero in genero_preferido %}
+                        <span class="tag is-info">{{ genero }}<button class="delete" onclick="removeTag(this)"></button></span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="column is-one-third">
+                <label for="ano_inicio">Ano Início:</label>
+                <input type="number" class="input" id="ano_inicio" name="ano_inicio" value="{{ ano_inicio }}">
+            </div>
+            <div class="column is-one-third">
+                <label for="ano_fim">Ano Fim:</label>
+                <input type="number" class="input" id="ano_fim" name="ano_fim" value="{{ ano_fim }}">
+            </div>
+            <div class="column is-one-third">
+                <label for="avaliacao_minima">Avaliação Mínima:</label>
+                <input type="number" step="0.1" class="input" id="avaliacao_minima" name="avaliacao_minima" value="{{ avaliacao_minima }}">
+            </div>
+        </div>
+        <button type="submit" class="button is-primary">Recomendar Filmes</button>
+        <button type="button" id="limpar-filtros" class="button is-primary mt-3">Limpar Filtros</button>
+    </form>
+</div>
+
+{% if recomendacoes %}
+    <h2 class="title is-4">Filmes Recomendados:</h2>
+    <div class="columns is-multiline">
+        {% for filme in recomendacoes %}
+            <div class="column is-one-fifth">
+                <div class="card equal-height">
+                    <div class="card-image">
+                        <figure class="image is-4by5">
+                            <img src="{{ filme.poster_url }}" alt="{{ filme.titulo }}">
+                        </figure>
+                    </div>
+                    <div class="card-content">
+                        <div class="media">
+                            <div class="media-content">
+                                <p class="title is-6">{{ filme.titulo }} ({{ filme.ano }})</p>
+                                <p class="subtitle is-7">{{ filme.genero }}</p>
+                            </div>
+                        </div>
+                        <div class="content is-clipped">
+                            <p><strong>Diretor:</strong> {{ filme.diretor }}</p>
+                            <p><strong>Elenco:</strong> 
+                                {% for ator in filme.elenco %}
+                                    <a href="{{ url_for('detalhes_ator', nome=ator) }}">{{ ator }}</a>{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            </p>
+                            <p><strong>Avaliação Média:</strong> {{ filme.avaliacoes | length > 0 and (filme.avaliacoes | sum / filme.avaliacoes | length) or 'N/A' }}</p>
+                            <p>{{ filme.sinopse }}</p>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <a href="{{ url_for('detalhes_filme', titulo=filme.titulo) }}" class="card-footer-item button is-primary">Leia mais...</a>
+                    </footer>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <h2 class="title is-4">Todos os Filmes:</h2>
+    <div class="columns is-multiline">
+        {% for filme in filmes %}
+            <div class="column is-one-fifth">
+                <div class="card equal-height">
+                    <div class="card-image">
+                        <figure class="image is-4by5">
+                            <img src="{{ filme.poster_url }}" alt="{{ filme.titulo }}">
+                        </figure>
+                    </div>
+                    <div class="card-content">
+                        <div class="media">
+                            <div class="media-content">
+                                <p class="title is-6">{{ filme.titulo }} ({{ filme.ano }})</p>
+                                <p class="subtitle is-7">{{ filme.genero }}</p>
+                            </div>
+                        </div>
+                        <div class="content is-clipped">
+                            <p><strong>Diretor:</strong> {{ filme.diretor }}</p>
+                            <p><strong>Elenco:</strong> 
+                                {% for ator in filme.elenco %}
+                                    <a href="{{ url_for('detalhes_ator', nome=ator) }}">{{ ator }}</a>{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            </p>
+                            <p><strong>Avaliação Média:</strong> {{ filme.avaliacoes | length > 0 and (filme.avaliacoes | sum / filme.avaliacoes | length) or 'N/A' }}</p>
+                            <p>{{ filme.sinopse }}</p>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <a href="{{ url_for('detalhes_filme', titulo=filme.titulo) }}" class="card-footer-item button is-primary">Leia mais...</a>
+                    </footer>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% include 'pagination.html' %}
+
+<script>
+document.getElementById('filtros-btn').addEventListener('click', function() {
+    document.getElementById('filtros-container').classList.toggle('is-hidden');
+});
+
+document.getElementById('limpar-filtros').addEventListener('click', function() {
+    document.getElementById('ator').value = '';
+    document.getElementById('diretor').value = '';
+    document.getElementById('genero').value = '';
+    document.getElementById('ano_inicio').value = '';
+    document.getElementById('ano_fim').value = '';
+    document.getElementById('avaliacao_minima').value = '';
+    document.getElementById('filtros-form').submit();
+});
+
+// Função para adicionar tags
+document.querySelectorAll('.tag-input').forEach(function(input) {
+    input.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            var tagText = input.value.trim();
+            if (tagText !== '' && !isTagDuplicate(tagText, input.parentElement.querySelector('.tags'))) {
+                var tag = document.createElement('span');
+                tag.textContent = tagText;
+                tag.className = 'tag is-info';
+                var deleteButton = document.createElement('button');
+                deleteButton.className = 'delete';
+                deleteButton.addEventListener('click', function() {
+                    removeTag(this);
+                });
+                tag.appendChild(deleteButton);
+                input.parentElement.querySelector('.tags').appendChild(tag);   
+                input.value = '';
+            }
+        }
+    });
+});
+
+// Função para verificar duplicação de tags
+function isTagDuplicate(tagText, tagContainer) {
+    var tags = tagContainer.querySelectorAll('.tag');
+    for (var i = 0; i < tags.length; i++) {
+        if (tags[i].textContent.trim().slice(0, -1) === tagText) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Função para remover tags
+function removeTag(button) {
+    button.parentElement.remove();
+}
+
+// Função para adicionar inputs ocultos ao enviar o formulário
+document.getElementById('filtros-form').addEventListener('submit', function(event) {
+    // Limpa todos os inputs ocultos para evitar duplicações
+    const hiddenInputs = this.querySelectorAll('input[type="hidden"]');
+    hiddenInputs.forEach(input => input.remove());
+
+    // Adiciona os inputs ocultos para cada tag
+    addHiddenInputs('ator', 'ator-tags');
+    addHiddenInputs('diretor', 'diretor-tags');
+    addHiddenInputs('genero', 'genero-tags');
+});
+
+function addHiddenInputs(inputName, tagsContainerId) {
+    const tags = document.querySelectorAll(`#${tagsContainerId} .tag`);
+    tags.forEach(tag => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = inputName;
+        input.value = tag.childNodes[0].nodeValue.trim();  // Pega o texto sem o botão de delete
+        document.getElementById('filtros-form').appendChild(input);
+    });
+}
+</script>
+{% endblock %}

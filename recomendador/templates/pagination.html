@@ -1,0 +1,37 @@
+<nav class="pagination is-centered" role="navigation" aria-label="pagination">
+    {% set page = page | default(1) %}
+    {% set total_pages = total_pages | default(1) %}
+    {% if page > 1 %}
+        <a class="pagination-previous" href="{{ url_for('recomenda_filmes', page=page-1, ator=ator_preferido, diretor=diretor_preferido, genero=genero_preferido, ano_inicio=ano_inicio, ano_fim=ano_fim, avaliacao_minima=avaliacao_minima) }}">Anterior</a>
+    {% else %}
+        <a class="pagination-previous" disabled>Anterior</a>
+    {% endif %}
+    {% if page < total_pages %}
+        <a class="pagination-next" href="{{ url_for('recomenda_filmes', page=page+1, ator=ator_preferido, diretor=diretor_preferido, genero=genero_preferido, ano_inicio=ano_inicio, ano_fim=ano_fim, avaliacao_minima=avaliacao_minima) }}">Próximo</a>
+    {% else %}
+        <a class="pagination-next" disabled>Próximo</a>
+    {% endif %}
+    <ul class="pagination-list">
+        {% set start_page = max(1, page - 2) %}
+        {% set end_page = min(total_pages, page + 2) %}
+        {% if start_page > 1 %}
+            <li><a class="pagination-link" href="{{ url_for('recomenda_filmes', page=1, ator=ator_preferido, diretor=diretor_preferido, genero=genero_preferido, ano_inicio=ano_inicio, ano_fim=ano_fim, avaliacao_minima=avaliacao_minima) }}">1</a></li>
+            {% if start_page > 2 %}
+                <li><span class="pagination-ellipsis">&hellip;</span></li>
+            {% endif %}
+        {% endif %}
+        {% for p in range(start_page, end_page + 1) %}
+            {% if p == page %}
+                <li><a class="pagination-link is-current">{{ p }}</a></li>
+            {% else %}
+                <li><a class="pagination-link" href="{{ url_for('recomenda_filmes', page=p, ator=ator_preferido, diretor=diretor_preferido, genero=genero_preferido, ano_inicio=ano_inicio, ano_fim=ano_fim, avaliacao_minima=avaliacao_minima) }}">{{ p }}</a></li>
+            {% endif %}
+        {% endfor %}
+        {% if end_page < total_pages %}
+            {% if end_page < total_pages - 1 %}
+                <li><span class="pagination-ellipsis">&hellip;</span></li>
+            {% endif %}
+            <li><a class="pagination-link" href="{{ url_for('recomenda_filmes', page=total_pages, ator=ator_preferido, diretor=diretor_preferido, genero=genero_preferido, ano_inicio=ano_inicio, ano_fim=ano_fim, avaliacao_minima=avaliacao_minima) }}">{{ total_pages }}</a></li>
+        {% endif %}
+    </ul>
+</nav>
